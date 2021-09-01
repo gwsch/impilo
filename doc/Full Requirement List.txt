@@ -1,0 +1,79 @@
+Patient/Clinic Side
+
+Hardware Requirements
+
+[  ] Android or Iphone handset
+
+[  ] Automatic bluetooth enabled disgnostic tools capable of measuring: Blood Pressure, Blood Oxygen Saturation, Temperature, Pulse Rate, Blood Glucose etc.
+
+[  ] Wifi or 4g access
+
+Application Software Requirements
+
+[  ] Low data consumption application
+
+[  ] App should have access to cloud with Patient Permissions
+
+[  ] Patient Led Schedueling
+
+[  ] Diagnostic devices integration
+
+[  ] Data Security
+
+[  ] Portals for viewing patient specific reports and past appointments
+
+[  ] Communication via Text or Voice Notes
+
+[  ] Scheduled Video Call Communication, Notifications and alarms.
+
+Cloud Storage Requirements
+
+• Analytics and reporting tools
+
+• APIs for integration with third-party software
+
+• Custom permissions
+
+• Billing Tools
+
+• Integration with medical records software and practice management systems
+
+• File sharing and viewing
+
+Doctor /Clinician Side
+
+Hardware Requirements
+
+[  ] At least a 10.1 inch android tablet or iOs tablet
+
+[  ]  Desktop/Laptop Computer
+
+Application Software Requirements
+
+• Patient user profiles
+
+• Customizable appointment types
+
+• Portals for viewing reports and past appointments
+
+• Remote control of certain diagnostic devices
+
+• Billing Tools
+
+• Analytics and reporting tools
+
+• Customs and Permissions
+
+• Data security
+
+• Prescription tools
+
+• AI based patient priority list
+
+• Notifications and Alarms based on incoming patient data
+
+• Text, voice,  and video call capabilities
+
+• Referal system, records and follow ups. Nurse to Doctor and Doctor to Specialist/Hospital.
+
+. Wifi and 4g access
