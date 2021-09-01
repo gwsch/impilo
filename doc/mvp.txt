@@ -1,0 +1,44 @@
+MVP (Minimal valuable product)
+
+Functionality:
+
+- Login
+	All app functionality is bound to the context staff/point of service
+- Remote patient search
+	It's assumed that Impilo implements the Electronic Health Record in it's core modules
+	A reference implementation might be found in https://openmrs.org/
+- Select patient
+	Patient management (add/change/delete/merge with other record) is part of the 
+	Electronic Health Record management and must be done there.
+- Initiate device action
+- Receive device data
+	It's assumed that the device data are in a format which are easily storable in the
+	Impilo back end: plain text, JSON, XML, maybe images as the most complex format
+- Send result to the back end
+	Send data as structured visit/encounter data. The infrastructure might look like 
+	https://rest.openmrs.org
+
+Implementation considerations:
+
+- Native Android App
+    Sophisticated hardware interaction is assumed which can only be managed by a native app
+	Minimal supported version to be decided (?)
+- Programmaing Language
+    Kotlin as it is supposed to be the new standard for Android
+	
+Enhancement strategy:
+
+- Offline mode:
+	Keep the functionality in case of lacking access to a network. This needs a client
+	side patient data management and batch upload once network access is available
+- Deep integration with other modules on the client/tablet
+	As an initial standalone app besides other Impilo features it's tedious to follow 
+	the login, patient search steps which might have benn done already elsewhere.
+
+Project restrictions:
+
+- 2 flavour approach: Integrate with Impilo and OpenMRS 
+- Fine grain test case strategy for hardware device integration as this task has to be 
+	split up between software developers and people which have hardware access
+
+	
