@@ -8,7 +8,6 @@ import android.os.IBinder
 import android.util.Log
 import java.util.*
 
-
 class BluetoothLeService : Service() {
 
     private val logTag: String = BluetoothLeService::class.simpleName!!
@@ -97,7 +96,7 @@ class BluetoothLeService : Service() {
         // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
         if (UUID_HEART_RATE_MEASUREMENT == characteristic.uuid) {
             val flag = characteristic.properties
-            var format = -1
+            val format: Int
             if (flag and 0x01 != 0) {
                 format = BluetoothGattCharacteristic.FORMAT_UINT16
                 Log.d(logTag, "Heart rate format UINT16.")
@@ -126,7 +125,7 @@ class BluetoothLeService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         mBinder.service = this@BluetoothLeService
-        return mBinder;
+        return mBinder
     }
 
     override fun onUnbind(intent: Intent): Boolean {
