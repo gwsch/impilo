@@ -34,7 +34,6 @@ class BluetoothScanActivity : AppCompatActivity() {
             runOnUiThread {
                 //Toast.makeText(this, device.address, Toast.LENGTH_SHORT).show()
                 mLeDeviceListAdapter!!.addDevice(device)
-                mLeDeviceListAdapter!!.notifyDataSetChanged()
             }
         }
     private var mResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -54,7 +53,7 @@ class BluetoothScanActivity : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.bluetooth_devices)
         recyclerView.adapter = mLeDeviceListAdapter
-        recyclerView.setLayoutManager(LinearLayoutManager(this));
+        recyclerView.setLayoutManager(LinearLayoutManager(this))
         mHandler = Handler(Looper.getMainLooper())
 
         if (!packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {

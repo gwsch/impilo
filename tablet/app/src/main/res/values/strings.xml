@@ -26,5 +26,5 @@
     <string name="error_bluetooth_not_supported">Bluetooth not supported</string>
     <string name="error_bluetooth_required">Bluetooth required</string>
     <string name="unknown_device">unknown device</string>
-    <string name="permission_location_and_bluetooth_rationale_message">Permissions required</string>
+    <string name="permission_location_and_bluetooth_rationale_message">Permission location is a prerequisite for Bluetooth connectivity</string>
 </resources>

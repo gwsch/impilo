@@ -7,15 +7,6 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".MainActivity">
-
         <Button
             android:id="@+id/buttonBluetoothScan"
             android:layout_width="180dp"
@@ -26,15 +17,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonBPM" />
 
-        <Button
-            android:id="@+id/buttonSettings"
-            android:layout_width="180dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="11dp"
-            android:text="Settings"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonBPM" />
+    <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="180dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="11dp"
+        android:text="@string/title_activity_settings"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBPM" />
 
         <TextView
             android:id="@+id/textView"
@@ -57,7 +48,5 @@
             android:text="Blood Pressure"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
