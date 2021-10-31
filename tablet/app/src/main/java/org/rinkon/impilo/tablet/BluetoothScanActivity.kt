@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 @SuppressLint("NewApi")
 class BluetoothScanActivity : AppCompatActivity() {
@@ -143,6 +144,9 @@ class BluetoothScanActivity : AppCompatActivity() {
                 invalidateOptionsMenu()
             }, scanPeriod)
             mScanning = true
+
+            for (device in mBluetoothAdapter!!.bondedDevices) mLeDeviceListAdapter!!.addDevice(device)
+
             if (mBluetoothAdapter!!.startLeScan(mLeScanCallback)) {
                 Toast.makeText(this, "scan started", Toast.LENGTH_SHORT).show()
             } else {
@@ -155,68 +159,25 @@ class BluetoothScanActivity : AppCompatActivity() {
         invalidateOptionsMenu()
     }
 
-    /*internal class ViewHolder(val deviceName: TextView, val deviceAddress: TextView)
-
-    internal class LeDeviceListAdapter(private val inflater: LayoutInflater) : BaseAdapter() {
-
-        private val mLeDevices: ArrayList<BluetoothDevice> = ArrayList()
-
-        fun addDevice(device: BluetoothDevice) {
-            if (!mLeDevices.contains(device)) {
-                mLeDevices.add(device)
-            }
-        }
-
-        fun getDevice(position: Int): BluetoothDevice {
-            return mLeDevices[position]
-        }
-
-        fun clear() {
-            mLeDevices.clear()
-        }
-
-        override fun getCount(): Int {
-            return mLeDevices.size
-        }
-
-        override fun getItem(i: Int): Any {
-            return mLeDevices[i]
-        }
-
-        override fun getItemId(i: Int): Long {
-            return i.toLong()
-        }
-
-        override fun getView(i: Int, view: View?, viewGroup: ViewGroup?): View? {
-            var mView: View? = view
-            val viewHolder: ViewHolder
-            if (mView == null) {
-                mView = inflater.inflate(R.layout.listitem_device, viewGroup)
-                viewHolder = ViewHolder(
-                    mView.findViewById(R.id.device_address) as TextView,
-                    mView.findViewById(R.id.device_name) as TextView)
-                mView.tag = viewHolder
-            } else {
-                viewHolder = mView.tag as ViewHolder
-            }
-            val device = mLeDevices[i]
-            val deviceName = device.name
-            if (deviceName != null && deviceName.isNotEmpty()) viewHolder.deviceName.text = deviceName
-            else viewHolder.deviceName.setText(R.string.unknown_device)
-            viewHolder.deviceAddress.text = device.address
-            return mView
-        }
-    }*/
-
     internal class LeDeviceListAdapter : RecyclerView.Adapter<LeDeviceListAdapter.DeviceViewHolder>() {
 
-        class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        internal class DeviceViewHolder(itemView: View, private val adapter: LeDeviceListAdapter) :
+                    RecyclerView.ViewHolder(itemView), View.OnClickListener {
             val deviceName: TextView
             val deviceAddress: TextView
 
             init {
                 deviceName = itemView.findViewById(R.id.device_name)
                 deviceAddress = itemView.findViewById(R.id.device_address)
+                itemView.setOnClickListener(this)
+            }
+
+            override fun onClick(view: View?) {
+                val position: Int = this.layoutPosition
+                val device = adapter.getDevice(position)
+                Toast.makeText(view?.context, device.address, Toast.LENGTH_SHORT).show()
+                val intent = Intent(view?.context, BluetoothDeviceActivity::class.java)
+                view?.context?.startActivity(intent)
             }
         }
 
@@ -227,17 +188,22 @@ class BluetoothScanActivity : AppCompatActivity() {
             // Create a new view, which defines the UI of the list item
             val view = LayoutInflater.from(viewGroup.context)
                 .inflate(R.layout.list_item_device, viewGroup, false)
-            return DeviceViewHolder(view)
+            return DeviceViewHolder(view, this)
         }
 
         // Replace the contents of a view (invoked by the layout manager)
         override fun onBindViewHolder(viewHolder: DeviceViewHolder, position: Int) {
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
-            val devise = dataSet[position]
-            val name = devise.name + " alias: " + devise.alias + " type: " + devise.type
+            val device = dataSet[position]
+            val deviceClass = device.bluetoothClass
+            val name = device.name + " alias: " + device.alias + " type: " + device.type +
+                    " class: " + deviceClass.majorDeviceClass + "." + deviceClass.deviceClass +
+                    " bondState: " + device.bondState +
+                    " uuids: " + device.uuids?.joinToString(",","","",-1,"...",
+                        { it -> it.uuid.toString() })
             viewHolder.deviceName.text = name
-            viewHolder.deviceAddress.text = devise.address
+            viewHolder.deviceAddress.text = device.address
         }
 
         // Return the size of your dataset (invoked by the layout manager)
@@ -253,7 +219,7 @@ class BluetoothScanActivity : AppCompatActivity() {
             }
         }
 
-        fun getDevice(position: Int): BluetoothDevice {
+        private fun getDevice(position: Int): BluetoothDevice {
             return dataSet[position]
         }
 

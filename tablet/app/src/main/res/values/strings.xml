@@ -2,6 +2,7 @@
     <string name="app_name">Impilo Virtual Clinic</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_bluetooth_scan">Devices</string>
+    <string name="title_activity_bluetooth_device">Device</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.rinkon.impilo.tablet">
 
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tablet">
+        <activity
+            android:name=".BluetoothDeviceActivity"
+            android:label="@string/title_activity_bluetooth_device">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BluetoothScanActivity" />
+        </activity>
         <activity
             android:name=".BluetoothScanActivity"
             android:label="@string/title_activity_bluetooth_scan">
@@ -30,12 +37,10 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- <service android:name="org.rinkon.impilo.tablet.BluetoothScanActivity"
-            android:enabled="true"
-            android:foregroundServiceType="location"/> -->
-</application>
+    </application>
 
 </manifest>

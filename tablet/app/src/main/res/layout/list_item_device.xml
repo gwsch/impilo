@@ -14,6 +14,7 @@
         android:id="@+id/device_address"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/teal_200"
         android:textSize="12sp" />
 
 </LinearLayout>
