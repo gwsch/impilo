@@ -5,6 +5,7 @@ class SampleGattAttributes {
     companion object {
         private val attributes = HashMap<String, String>()
         var HEART_RATE_MEASUREMENT = "0000ffe1-0000-1000-8000-00805f9b34fb"
+        var BPM_METER_MEASUREMENT = "0000fff0-0000-1000-8000-00805f9b34fb"
         var CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb"
 
         init {

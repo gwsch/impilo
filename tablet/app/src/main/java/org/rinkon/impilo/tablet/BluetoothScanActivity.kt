@@ -34,7 +34,7 @@ class BluetoothScanActivity : AppCompatActivity() {
         LeScanCallback { device, _, _ ->
             runOnUiThread {
                 //Toast.makeText(this, device.address, Toast.LENGTH_SHORT).show()
-                mLeDeviceListAdapter!!.addDevice(device)
+                mLeDeviceListAdapter!!.addDevice(device, 1)
             }
         }
     private var mResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -145,7 +145,7 @@ class BluetoothScanActivity : AppCompatActivity() {
             }, scanPeriod)
             mScanning = true
 
-            for (device in mBluetoothAdapter!!.bondedDevices) mLeDeviceListAdapter!!.addDevice(device)
+            for (device in mBluetoothAdapter!!.bondedDevices) mLeDeviceListAdapter!!.addDevice(device, 0)
 
             if (mBluetoothAdapter!!.startLeScan(mLeScanCallback)) {
                 Toast.makeText(this, "scan started", Toast.LENGTH_SHORT).show()
@@ -175,13 +175,18 @@ class BluetoothScanActivity : AppCompatActivity() {
             override fun onClick(view: View?) {
                 val position: Int = this.layoutPosition
                 val device = adapter.getDevice(position)
-                Toast.makeText(view?.context, device.address, Toast.LENGTH_SHORT).show()
+                Toast.makeText(view?.context, device.name + " " + device.address, Toast.LENGTH_SHORT).show()
                 val intent = Intent(view?.context, BluetoothDeviceActivity::class.java)
+                intent.putExtra("name", device.name)
+                intent.putExtra("address", device.address)
+                intent.putExtra("scanCount", adapter.getScanCount(position))
                 view?.context?.startActivity(intent)
             }
         }
 
-        private val dataSet: ArrayList<BluetoothDevice> = ArrayList()
+        internal class DataItem(val device: BluetoothDevice, var scanCount: Int)
+
+        private val dataSet: ArrayList<DataItem> = ArrayList()
 
         // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): DeviceViewHolder {
@@ -195,32 +200,47 @@ class BluetoothScanActivity : AppCompatActivity() {
         override fun onBindViewHolder(viewHolder: DeviceViewHolder, position: Int) {
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
-            val device = dataSet[position]
+            val item = dataSet[position]
+            val device = item.device
             val deviceClass = device.bluetoothClass
-            val name = device.name + " alias: " + device.alias + " type: " + device.type +
+            val name = device.name + "    alias: " + device.alias + " type: " + device.type +
                     " class: " + deviceClass.majorDeviceClass + "." + deviceClass.deviceClass +
                     " bondState: " + device.bondState +
                     " uuids: " + device.uuids?.joinToString(",","","",-1,"...",
                         { it -> it.uuid.toString() })
             viewHolder.deviceName.text = name
-            viewHolder.deviceAddress.text = device.address
+            val address = device.address + " scanned count: " + item.scanCount
+            viewHolder.deviceAddress.text = address
         }
 
         // Return the size of your dataset (invoked by the layout manager)
         override fun getItemCount() = dataSet.size
 
-        override fun getItemId(i: Int): Long {
+        /*override fun getItemId(i: Int): Long {
             return i.toLong()
-        }
+        }*/
 
-        fun addDevice(device: BluetoothDevice) {
-            if (!dataSet.contains(device) && dataSet.add(device)) {
+        fun addDevice(device: BluetoothDevice, initScanCount: Int) {
+            var count = 0
+            for (item in dataSet.listIterator()) {
+                if (item.device == device) {
+                    item.scanCount++
+                    this.notifyItemChanged(count)
+                    return
+                }
+                count++
+            }
+            if (dataSet.add(DataItem(device, initScanCount))) {
                 notifyItemInserted(dataSet.size - 1)
             }
         }
 
         private fun getDevice(position: Int): BluetoothDevice {
-            return dataSet[position]
+            return dataSet[position].device
+        }
+
+        private fun getScanCount(position: Int): Int {
+            return dataSet[position].scanCount
         }
 
         fun clear() {

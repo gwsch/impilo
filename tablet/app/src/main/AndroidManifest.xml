@@ -41,6 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="org.rinkon.impilo.tablet.BluetoothLeService" android:enabled="true"/>
     </application>
 
 </manifest>

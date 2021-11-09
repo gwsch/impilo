@@ -2,16 +2,26 @@ package org.rinkon.impilo.tablet
 
 import android.app.Service
 import android.bluetooth.*
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import java.util.*
 
+object BluetoothLeConst {
+    const val ACTION_GATT_CONNECTED = "org.rinkon.impilo.tablet.ACTION_GATT_CONNECTED"
+    const val ACTION_GATT_DISCONNECTED = "org.rinkon.impilo.tablet.ACTION_GATT_DISCONNECTED"
+    const val ACTION_GATT_SERVICES_DISCOVERED = "org.rinkon.impilo.tablet.ACTION_GATT_SERVICES_DISCOVERED"
+    const val ACTION_DATA_AVAILABLE = "org.rinkon.impilo.tablet.ACTION_DATA_AVAILABLE"
+    const val EXTRA_DATA = "org.rinkon.impilo.tablet.EXTRA_DATA"
+}
+
 class BluetoothLeService : Service() {
 
     private val logTag: String = BluetoothLeService::class.simpleName!!
 
+    private var mBluetoothManager: BluetoothManager? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var mBluetoothGatt: BluetoothGatt? = null
     private var mBluetoothDeviceAddress: String? = null
@@ -25,19 +35,13 @@ class BluetoothLeService : Service() {
     private val svrUUIDKey = "0000ffe5-0000-1000-8000-00805f9b34fb"
     private val chrUUIDKey = "0000ffe9-0000-1000-8000-00805f9b34fb"
 
-    val ACTION_GATT_CONNECTED = "org.rinkon.impilo.tablet.ACTION_GATT_CONNECTED"
-    val ACTION_GATT_DISCONNECTED = "org.rinkon.impilo.tablet.ACTION_GATT_DISCONNECTED"
-    val ACTION_GATT_SERVICES_DISCOVERED = "org.rinkon.impilo.tablet.ACTION_GATT_SERVICES_DISCOVERED"
-    val ACTION_DATA_AVAILABLE = "org.rinkon.impilo.tablet.ACTION_DATA_AVAILABLE"
-    val EXTRA_DATA = "org.rinkon.impilo.tablet.EXTRA_DATA"
-
     val UUID_HEART_RATE_MEASUREMENT = UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT)
 
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             val intentAction: String
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED
+                intentAction = BluetoothLeConst.ACTION_GATT_CONNECTED
                 mConnectionState = stateConnected
                 broadcastUpdate(intentAction)
                 Log.i(logTag, "Connected to GATT server.")
@@ -47,7 +51,7 @@ class BluetoothLeService : Service() {
                             mBluetoothGatt!!.discoverServices()
                 )
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED
+                intentAction = BluetoothLeConst.ACTION_GATT_DISCONNECTED
                 mConnectionState = stateDisconnected
                 Log.i(logTag, "Disconnected from GATT server.")
                 broadcastUpdate(intentAction)
@@ -56,7 +60,7 @@ class BluetoothLeService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
+                broadcastUpdate(BluetoothLeConst.ACTION_GATT_SERVICES_DISCOVERED)
             } else {
                 Log.w(logTag, "onServicesDiscovered received: $status")
             }
@@ -68,7 +72,7 @@ class BluetoothLeService : Service() {
             status: Int
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic)
+                broadcastUpdate(BluetoothLeConst.ACTION_DATA_AVAILABLE, characteristic)
             }
         }
 
@@ -76,7 +80,7 @@ class BluetoothLeService : Service() {
             gatt: BluetoothGatt,
             characteristic: BluetoothGattCharacteristic
         ) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic)
+            broadcastUpdate(BluetoothLeConst.ACTION_DATA_AVAILABLE, characteristic)
         }
     }
 
@@ -106,12 +110,12 @@ class BluetoothLeService : Service() {
             }
             val heartRate = characteristic.getIntValue(format, 1)
             Log.d(logTag, String.format("Received heart rate: %d", heartRate))
-            intent.putExtra(EXTRA_DATA, heartRate.toString())
+            intent.putExtra(BluetoothLeConst.EXTRA_DATA, heartRate.toString())
         } else {
             // For all other profiles, writes the data formatted in HEX.
             val data = characteristic.value
             if (data != null && data.isNotEmpty()) {
-                intent.putExtra(EXTRA_DATA, data)
+                intent.putExtra(BluetoothLeConst.EXTRA_DATA, data)
             }
         }
         sendBroadcast(intent)
@@ -136,10 +140,29 @@ class BluetoothLeService : Service() {
         return super.onUnbind(intent)
     }
 
+    fun initialize(): Boolean {
+        // For API level 18 and above, get a reference to BluetoothAdapter through
+        // BluetoothManager.
+        if (mBluetoothManager == null) {
+            mBluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+            if (mBluetoothManager == null) {
+                Log.e(logTag, "Unable to initialize BluetoothManager.")
+                return false
+            }
+        }
+        mBluetoothAdapter = mBluetoothManager?.getAdapter()
+        if (mBluetoothAdapter == null) {
+            Log.e(logTag, "Unable to obtain a BluetoothAdapter.")
+            return false
+        }
+        return true
+    }
+
     fun close() {
         mBluetoothGatt?.close()
         mBluetoothGatt = null
     }
+
     fun connect(address: String?): Boolean {
         if (mBluetoothAdapter == null || address == null) {
             Log.w(logTag, "BluetoothAdapter not initialized or unspecified address.")
@@ -175,7 +198,7 @@ class BluetoothLeService : Service() {
             Log.w(logTag, "BluetoothAdapter not initialized")
             return
         }
-        mBluetoothGatt?.disconnect()
+        mBluetoothGatt!!.disconnect()
     }
 
     fun readCharacteristic(characteristic: BluetoothGattCharacteristic) {
@@ -183,7 +206,7 @@ class BluetoothLeService : Service() {
             Log.w(logTag, "BluetoothAdapter not initialized")
             return
         }
-        mBluetoothGatt?.readCharacteristic(characteristic)
+        mBluetoothGatt!!.readCharacteristic(characteristic)
     }
 
     fun writeCharacteristic(charData: ByteArray): Int {

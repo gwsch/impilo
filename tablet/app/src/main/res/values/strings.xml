@@ -28,4 +28,7 @@
     <string name="error_bluetooth_required">Bluetooth required</string>
     <string name="unknown_device">unknown device</string>
     <string name="permission_location_and_bluetooth_rationale_message">Permission location is a prerequisite for Bluetooth connectivity</string>
+
+    <string name="connected">connected</string>
+    <string name="disconnected">disconnected</string>
 </resources>
