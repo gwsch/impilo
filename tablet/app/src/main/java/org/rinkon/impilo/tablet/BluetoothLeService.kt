@@ -46,10 +46,7 @@ class BluetoothLeService : Service() {
                 broadcastUpdate(intentAction)
                 Log.i(logTag, "Connected to GATT server.")
                 // Attempts to discover services after successful connection.
-                Log.i(
-                    logTag, "Attempting to start service discovery:" +
-                            mBluetoothGatt!!.discoverServices()
-                )
+                Log.i(logTag, "Attempting to start service discovery:" + mBluetoothGatt!!.discoverServices())
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = BluetoothLeConst.ACTION_GATT_DISCONNECTED
                 mConnectionState = stateDisconnected
@@ -66,20 +63,14 @@ class BluetoothLeService : Service() {
             }
         }
 
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
+        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic,
+                                          status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(BluetoothLeConst.ACTION_DATA_AVAILABLE, characteristic)
             }
         }
 
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic
-        ) {
+        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
             broadcastUpdate(BluetoothLeConst.ACTION_DATA_AVAILABLE, characteristic)
         }
     }
@@ -89,10 +80,7 @@ class BluetoothLeService : Service() {
         sendBroadcast(intent)
     }
 
-    private fun broadcastUpdate(
-        action: String,
-        characteristic: BluetoothGattCharacteristic
-    ) {
+    private fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic) {
         val intent = Intent(action)
 
         // This is special handling for the Heart Rate Measurement profile.  Data parsing is

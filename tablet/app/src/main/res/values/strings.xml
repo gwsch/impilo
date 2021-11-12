@@ -31,4 +31,7 @@
 
     <string name="connected">connected</string>
     <string name="disconnected">disconnected</string>
+
+    <string name="unknown_characteristic">unknown characteristic</string>
+    <string name="unknown_service">unknown service</string>
 </resources>
