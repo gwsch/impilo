@@ -35,7 +35,7 @@ class BluetoothLeService : Service() {
     private val svrUUIDKey = "0000ffe5-0000-1000-8000-00805f9b34fb"
     private val chrUUIDKey = "0000ffe9-0000-1000-8000-00805f9b34fb"
 
-    val UUID_HEART_RATE_MEASUREMENT = UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT)
+    private val uuidHeartRateMaesurement = UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT)
 
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
@@ -77,16 +77,18 @@ class BluetoothLeService : Service() {
 
     private fun broadcastUpdate(action: String) {
         val intent = Intent(action)
+
         sendBroadcast(intent)
     }
 
+    @Suppress("SameParameterValue")
     private fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic) {
         val intent = Intent(action)
 
         // This is special handling for the Heart Rate Measurement profile.  Data parsing is
         // carried out as per profile specifications:
         // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
-        if (UUID_HEART_RATE_MEASUREMENT == characteristic.uuid) {
+        if (uuidHeartRateMaesurement == characteristic.uuid) {
             val flag = characteristic.properties
             val format: Int
             if (flag and 0x01 != 0) {
@@ -138,7 +140,7 @@ class BluetoothLeService : Service() {
                 return false
             }
         }
-        mBluetoothAdapter = mBluetoothManager?.getAdapter()
+        mBluetoothAdapter = mBluetoothManager?.adapter
         if (mBluetoothAdapter == null) {
             Log.e(logTag, "Unable to obtain a BluetoothAdapter.")
             return false
@@ -221,7 +223,7 @@ class BluetoothLeService : Service() {
         mBluetoothGatt?.setCharacteristicNotification(characteristic, enabled)
 
         // This is specific to Heart Rate Measurement.
-        if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.uuid)) {
+        if (uuidHeartRateMaesurement.equals(characteristic.uuid)) {
             val descriptor = characteristic.getDescriptor(
                 UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG)
             )

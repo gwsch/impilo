@@ -29,8 +29,8 @@
     <string name="unknown_device">unknown device</string>
     <string name="permission_location_and_bluetooth_rationale_message">Permission location is a prerequisite for Bluetooth connectivity</string>
 
-    <string name="connected">connected</string>
-    <string name="disconnected">disconnected</string>
+    <string name="connected">gatt connected</string>
+    <string name="disconnected">gatt disconnected</string>
 
     <string name="unknown_characteristic">unknown characteristic</string>
     <string name="unknown_service">unknown service</string>
